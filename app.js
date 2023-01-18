@@ -65,6 +65,10 @@ const getOxBalanceByContract = async () => {
   return balance;
 };
 
+app.get("/", async (req, res) => {
+  res.send("Health Check!");
+});
+
 app.get("/api/total-supply", async (req, res) => {
   const response = await getTotalSupply();
   const balance = await getOxBalanceByContract();
