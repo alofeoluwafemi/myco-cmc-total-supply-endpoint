@@ -1,6 +1,8 @@
 const { default: BigNumber } = require("bignumber.js");
 const { ethers } = require("ethers");
+const { parseEther, formatEther, formatUnits } = require("ethers/lib/utils");
 const express = require("express");
+const { type } = require("express/lib/response");
 const app = express();
 const port = 3000;
 
@@ -70,21 +72,22 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/api/total-supply", async (req, res) => {
-  const response = await getTotalSupply();
-  const balance = await getOxBalanceByContract();
+  const total = new BigNumber(1e16); //10_000_000_000_000_000
+  const balanceWei = await getOxBalanceByContract();
+  const balance = balanceWei.div(10 ** 6); //4_108_371_491_667_972
+  const supply = total - balance;
 
-  const supply = new BigNumber(response.result);
-
-  res.send(supply.minus(balance.toString()).toFixed());
+  res.send(supply.toString());
 });
 
 app.get("/api/circulating-supply", async (req, res) => {
   const response = await getCirculatingSupply();
-  const balance = await getOxBalanceByContract();
+  const balanceWei = await getOxBalanceByContract();
+  const balance = balanceWei.div(10 ** 6);
 
   const supply = new BigNumber(response.result);
 
-  res.send(supply.minus(balance.toString()).toFixed());
+  res.send((supply - balance).toString());
 });
 
 app.listen(port, () => {
