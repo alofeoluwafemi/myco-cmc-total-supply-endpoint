@@ -67,15 +67,53 @@ const getOxBalanceByContract = async () => {
   return balance;
 };
 
+const getTeamControlledWalletBalance = async () => {
+  const sum = [];
+  const addresses = [
+    "0x38a294f69ce947573bea45d94fbc450109fabbb5",
+    "0x992cd46dfe21377bef5a5178f8b8349de2c37453",
+    "0x00105e37399e3dd45ca7a434c64e1c02cabc49ec",
+    "0x425716f5da5e872f7f27e097e9fe08bd9f0929ee",
+  ];
+
+  const abi = ["function balanceOf(address) view returns (uint)"];
+  const provider = "https://bsc-dataseed1.binance.org/";
+  const mcontentContract = new ethers.Contract(
+    MCONTENT_CONTRACT_ADDRESS,
+    abi,
+    new ethers.providers.JsonRpcProvider(provider)
+  );
+
+  for (const address of addresses) {
+    const balance = await mcontentContract.balanceOf(address);
+
+    sum.push(balance.div(10 ** 6).toNumber());
+  }
+
+  let total = 0;
+
+  for (const s of sum) {
+    total += s;
+  }
+
+  return total;
+};
+
 app.get("/", async (req, res) => {
   res.send("Health Check!");
 });
 
 app.get("/api/total-supply", async (req, res) => {
   const total = new BigNumber(1e16); //10_000_000_000_000_000
-  const balanceWei = await getOxBalanceByContract();
-  const balance = balanceWei.div(10 ** 6); //4_108_371_491_667_972
-  const supply = total - balance;
+  const OxbalanceWei = await getOxBalanceByContract();
+  const Oxbalance = OxbalanceWei.div(10 ** 6).toNumber(); //4_108_371_491_667_972
+  const team = await getTeamControlledWalletBalance();
+
+  //Subtract team controlled wallet balance
+  let supply = total.minus(team);
+
+  //Subtract 0x balance
+  supply = supply.minus(Oxbalance);
 
   res.send(supply.toString());
 });
