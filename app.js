@@ -71,9 +71,9 @@ const getTeamControlledWalletBalance = async () => {
   const sum = [];
   const addresses = [
     "0x38a294f69ce947573bea45d94fbc450109fabbb5",
+    "0xee8d0803ab1fc744318a12499fdd41fcf43e344d",
+    "0x2c0d93cbcafcd531de0f7c649e3bc22b9a95a143",
     "0x992cd46dfe21377bef5a5178f8b8349de2c37453",
-    "0x00105e37399e3dd45ca7a434c64e1c02cabc49ec",
-    "0x425716f5da5e872f7f27e097e9fe08bd9f0929ee",
   ];
 
   const abi = ["function balanceOf(address) view returns (uint)"];
